@@ -5,7 +5,7 @@ A Unity-based procedural terrain generation system that provides customizable te
 
 The entire logic lays in the ``TerrainGenerator`` script.
 
-During the initialization of the script, a ``Mesh``, ``MeshFilter``, and ``MeshRenderer`` are created and set up. To support larger mesh sizes, the mesh's index format is changed to ``UInt32`` as the default ``UInt16`` limits the number of vertices. After generating the heightmap for the mesh, a ``MeshCollider`` is later added to enable collision detection.
+During the initialization of the script, a ``Mesh``, ``MeshFilter``, and ``MeshRenderer`` are created and set up. To support larger mesh sizes, the mesh's index format is changed to ``UInt32`` as the default ``UInt16`` limits the number of vertices.
 
 The mesh's vertices and triangles are initialized and computed according to the [procedural grid](https://catlikecoding.com/unity/tutorials/procedural-grid/) tutorial from *Catlike Coding*. Each vertex's height is influenced by a combination of Perlin Noise and several parameters, including frequency, offset, and octaves. The ``Mathf.PerlinNoise()`` function is used to generate noise based on the X and Z positions of each vertex, returning a value between 0 and 1. To introduce variation across the terrain, an offset is applied to the X and Z coordinates, shifting the noise pattern on these axes. The result is then scaled vertically by multiplying with the frequency, allowing the terrain to be adjusted in terms of detail and elevation. Octaves are additional layers of noise that increase in frequency with each level. With each successive octave, the terrain becomes more complex and varied.
 
@@ -38,7 +38,7 @@ Custom structs are also created to support different terrain levels and world el
   alt="WorldElements">
 </p>
 
-The project also includes the [Starter Assets](https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526) which can be used to allow player movement across the terrain.
+The project also includes the [Starter Assets](https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526) which can be used to allow player movement across the terrain. Since the script does not create a ``MeshCollider``, the component will have to be added manually in the inspector.
 
 The mesh is updated whenever there are changes to the parameters displayed in the Unity inspector. The mesh can be also regenerated through other scripts by calling the ``UpdateTerrain()`` function.
 
