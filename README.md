@@ -14,7 +14,6 @@ Following the approach outlined in [Making maps with noise functions](https://ww
 <p align="center">
   <img
   src="Images/elevation.png"
-  width="60%"
   alt="Elevation">
   <figcaption align="center">Elevation type</figcaption>
 </p>
@@ -22,7 +21,6 @@ Following the approach outlined in [Making maps with noise functions](https://ww
 <p align="center">
   <img
   src="Images/terrace.png"
-  width="60%"
   alt="Terrace">
   <figcaption align="center">Terrace type</figcaption>
 </p>
@@ -34,7 +32,6 @@ Custom structs are also created to support different terrain levels and world el
 <p align="center">
   <img
   src="Images/worldElements.png"
-  width="60%"
   alt="WorldElements">
 </p>
 
