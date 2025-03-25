@@ -436,7 +436,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2043485715}
   - component: {fileID: 2043485714}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,15 +456,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 9edb39e9398b3b741bc54d0c216e5775, type: 2}
-  xSize: 200
-  zSize: 200
+  xSize: 500
+  zSize: 500
   terrainType: 0
-  elevationExponent: 1
-  terraceCount: 10
+  elevationExponent: 3
+  terraceCount: 20
   offset: {x: 0, y: 0}
-  frequency: 0.02
-  octaves: 1
-  heightRange: {x: 0, y: 30}
+  frequency: 0.01
+  octaves: 2
+  heightRange: {x: 0, y: 128}
   terrainLevels:
   - minValue: 0
     color: {r: 0.1882353, g: 0.34901962, b: 0.58431375, a: 1}
@@ -482,19 +482,7 @@ MonoBehaviour:
     color: {r: 0.25882354, g: 0.25882354, b: 0.25882354, a: 1}
   - minValue: 0.8
     color: {r: 1, g: 1, b: 1, a: 1}
-  worldElements:
-  - gameObject: {fileID: 919132149155446097, guid: 4616ef456850e3e41be72beceeb16bd9, type: 3}
-    spawnLevel: {x: 0.3, y: 0.4}
-    spawnFrequency: 0.6
-    rotateOnNormal: 1
-  - gameObject: {fileID: 919132149155446097, guid: cd962b6f313d52c449eb7d936f1b72bc, type: 3}
-    spawnLevel: {x: 0.3, y: 0.4}
-    spawnFrequency: 0.3
-    rotateOnNormal: 0
-  - gameObject: {fileID: 919132149155446097, guid: 3dfb8820f0e9382408f13de4066bbc40, type: 3}
-    spawnLevel: {x: 0.4, y: 0.7}
-    spawnFrequency: 0.2
-    rotateOnNormal: 0
+  worldElements: []
 --- !u!4 &2043485715
 Transform:
   m_ObjectHideFlags: 0
@@ -504,7 +492,7 @@ Transform:
   m_GameObject: {fileID: 2043485713}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -100, y: -50, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -5,9 +5,8 @@ using UnityEngine.Rendering;
 public class TerrainGenerator : MonoBehaviour
 {
     public Material material;
-
-    public int xSize = 200;
-    public int zSize = 200;
+    public int xSize = 500;
+    public int zSize = 500;
     public enum TerrainType
     {
         Elevation,
@@ -15,15 +14,15 @@ public class TerrainGenerator : MonoBehaviour
     }
     public TerrainType terrainType;
     [Range(1f, 10f)]
-    public float elevationExponent = 1;
+    public float elevationExponent = 3;
     [Range(1, 32)]
-    public int terraceCount = 10;
+    public int terraceCount = 20;
     public Vector2 offset = Vector2.zero;
     [Range(0f, 0.5f)]
-    public float frequency = 0.02f;
+    public float frequency = 0.01f;
     [Range(1, 10)]
-    public int octaves = 1;
-    public Vector2 heightRange = new Vector2(0, 1);
+    public int octaves = 2;
+    public Vector2 heightRange = new Vector2(0, 128);
     public List<TerrainLevel> terrainLevels = new();
     [System.Serializable]
     public struct TerrainLevel
@@ -41,17 +40,17 @@ public class TerrainGenerator : MonoBehaviour
         public float spawnFrequency;
         public bool rotateOnNormal;
     }
-    private List<GameObject> _gameObjectsList = new();
 
-    private Mesh _mesh;
     private int _currentXSize;
     private int _currentZSize;
+    private bool _shouldRegenerateTerrain;
+    private Mesh _mesh;
     private Vector3[] _vertices;
     private int[] _triangles;
     private Color[] _colors;
-    private float[] _vertexHeightsRaw;
     private bool[] _occupiedVertices;
-    private bool _shouldRegenerateTerrain;
+    private float[] _vertexHeightsRaw;
+    private List<GameObject> _spawnablesList = new();
 
     void Awake()
     {
@@ -68,10 +67,8 @@ public class TerrainGenerator : MonoBehaviour
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
         if (meshRenderer == null)
             meshRenderer = gameObject.AddComponent<MeshRenderer>();
-    
         meshRenderer.material = material;
 
-        GenerateTerrain();
         UpdateTerrain();
     }
 
@@ -104,20 +101,24 @@ public class TerrainGenerator : MonoBehaviour
     {
         if(_shouldRegenerateTerrain)
         {
-            GenerateTerrain();
             UpdateTerrain();
-
             _shouldRegenerateTerrain = false;
         }
     }
 
-    void GenerateTerrain()
+    public void UpdateTerrain()
     {
-        foreach(GameObject obj in _gameObjectsList)
+        CreateTerrainData();
+        ApplyTerrainData();
+    }
+
+    private void CreateTerrainData()
+    {
+        foreach(GameObject obj in _spawnablesList)
         {
             Destroy(obj);
         }
-        _gameObjectsList.Clear();
+        _spawnablesList.Clear();
 
         _vertices = new Vector3[(xSize + 1) * (zSize + 1)];
         _vertexHeightsRaw = new float[_vertices.Length];
@@ -178,13 +179,41 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    void UpdateTerrain()
+    private Color GetColor(float height)
+    {
+        int closestHeightIndex = 0;
+        float closestHeight = 0f;
+
+        for(int i = 0; i < terrainLevels.Count; i++)
+        {
+            if(height > terrainLevels[i].minValue)
+            {
+                if(terrainLevels[i].minValue > closestHeight)
+                {
+                    closestHeightIndex = i;
+                    closestHeight = terrainLevels[i].minValue;
+                }
+            }
+        }
+
+        return terrainLevels[closestHeightIndex].color;
+    }
+
+    private void ApplyTerrainData()
     {
         _mesh.Clear();
         _mesh.SetVertices(_vertices);
         _mesh.triangles = _triangles;
         _mesh.SetColors(_colors);
         _mesh.RecalculateNormals();
+
+        SpawnWorldElements();
+    }
+
+    private void SpawnWorldElements()
+    {
+        if(worldElements.Count == 0)
+            return;
 
         for(int vertexIndex = 0; vertexIndex < _vertices.Length; vertexIndex++)
         {
@@ -204,32 +233,12 @@ public class TerrainGenerator : MonoBehaviour
                         else
                             rotation = Quaternion.identity;
 
-                        GameObject worldElementObject = Instantiate(worldElement.gameObject, _vertices[vertexIndex], rotation, transform);
-                        _gameObjectsList.Add(worldElementObject);
+                        GameObject worldElementObject = Instantiate(worldElement.gameObject, transform.position + _vertices[vertexIndex], transform.rotation * rotation, transform);
+                        _spawnablesList.Add(worldElementObject);
                         _occupiedVertices[vertexIndex] = true;
                     }
                 }
-            } 
-        }
-    }
-
-    Color GetColor(float height)
-    {
-        int closestHeightIndex = 0;
-        float closestHeight = 0f;
-
-        for(int i = 0; i < terrainLevels.Count; i++)
-        {
-            if(height > terrainLevels[i].minValue)
-            {
-                if(terrainLevels[i].minValue > closestHeight)
-                {
-                    closestHeightIndex = i;
-                    closestHeight = terrainLevels[i].minValue;
-                }
             }
         }
-
-        return terrainLevels[closestHeightIndex].color;
     }
 }
