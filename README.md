@@ -84,3 +84,6 @@ git clone https://github.com/lavinia-lehaci/Procedural-Terrain-Generator.git
 - Assets
     - https://kenney.nl/assets/nature-kit
     - https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526
+
+## License
+MIT License
