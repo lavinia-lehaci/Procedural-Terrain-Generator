@@ -86,4 +86,4 @@ git clone https://github.com/lavinia-lehaci/Procedural-Terrain-Generator.git
     - https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526
 
 ## License
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
