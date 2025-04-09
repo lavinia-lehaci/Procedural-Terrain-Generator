@@ -125,11 +125,12 @@ public class TerrainGenerator : MonoBehaviour
         _occupiedVertices = new bool[_vertices.Length];
         _colors = new Color[_vertices.Length];
 
-        // Vertices
+        // Create vertex list
         for(int vertexIndex = 0, z = 0; z <= ZSize; z++)
         {
             for(int x = 0; x <= XSize; x++)
             {
+                // Generate heights based on octaves
                 float y = 0f;
                 float octaveFrequency = Frequency;
                 for(int i = 0; i < Octaves; i++)
@@ -140,15 +141,18 @@ public class TerrainGenerator : MonoBehaviour
                 y /= Octaves;
                 _vertexHeightsRaw[vertexIndex] = y;
 
+                // Apply the terrain function based on terrain type
                 float yTerrain;
                 if(Type == TerrainType.Terrace)
                     yTerrain = Mathf.Round(y * TerraceCount) / TerraceCount;
                 else
                     yTerrain = Mathf.Pow(y, ElevationExponent);
 
+                // Clamp the height value to the height range
                 float height = HeightRange.x + (yTerrain * (HeightRange.y - HeightRange.x));
                 _vertices[vertexIndex] = new Vector3(x, height, z);
 
+                // Apply colors
                 if(Levels.Count == 0)
                     _colors[vertexIndex] = Color.magenta;
                 else
@@ -158,7 +162,7 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
         
-        // Triangles
+        // Create triangle list
         _triangles = new int[XSize * ZSize * 6];
         for(int vertex = 0, triangleIndex = 0, z = 0; z < ZSize; z++)
         {
@@ -222,8 +226,10 @@ public class TerrainGenerator : MonoBehaviour
                 if(_occupiedVertices[vertexIndex])
                     continue;
 
+                // Ensure world element spawns within the given range by checking the vertices positions
                 if(_vertexHeightsRaw[vertexIndex] > worldElement.SpawnLevel.x && _vertexHeightsRaw[vertexIndex] < worldElement.SpawnLevel.y)
                 {
+                    // Spawn world elements with respect to the parent transform
                     float random = Random.Range(0f, 1f);
                     if(random < worldElement.SpawnFrequency)
                     {
