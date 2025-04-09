@@ -42,9 +42,9 @@ The mesh is updated whenever there are changes to the parameters displayed in th
 ## Configuration options
 <p align="center">
   <img
-  src="Images/parameters.png"
+  src="Images/configuration.png"
   width="50%"
-  alt="parameters">
+  alt="configuration">
 </p>
 
 - ``Material``- The material attached to the mesh.
