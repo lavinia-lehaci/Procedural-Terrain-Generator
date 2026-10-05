@@ -1,33 +1,78 @@
 # Procedural Terrain Generator
 A Unity-based procedural terrain generation system that provides customizable terrain features. 
 
-##  Workflow
+![Terrace demo](Images/terrace.gif)
 
-The entire logic lies in the ``TerrainGenerator`` script.
+![Elevation demo](Images/elevation.gif)
 
-During the initialization of the script, ``Mesh``, ``MeshFilter``, and ``MeshRenderer`` components are created and set up. To support larger mesh sizes, the mesh's index format is changed to ``UInt32`` as the default ``UInt16`` limits the number of vertices.
+## Features
 
-The mesh's vertices and triangles are initialized and computed according to the [procedural grid](https://catlikecoding.com/unity/tutorials/procedural-grid/) tutorial from *Catlike Coding*. Each vertex's height is influenced by a combination of Perlin Noise and several parameters, including frequency, offset, and octaves. The ``Mathf.PerlinNoise()`` function is used to generate noise based on the X and Z positions of each vertex by returning a value between 0 and 1. To introduce variation across the terrain, an offset is applied to the X and Z coordinates, shifting the noise pattern on these axes. The result is then scaled vertically by multiplying with the frequency, allowing the terrain to be adjusted in terms of detail and elevation. Octaves are additional layers of noise that increase in frequency with each level. With each successive octave, the terrain becomes more complex and varied.
+- Procedurally generated mesh terrain, fully configurable from the Unity Inspector
+- Two terrain shaping modes: smooth elevation (hills/valleys) or stepped terraces
+- Multi-octave noise for added detail and complexity
+- Height-based coloring via configurable terrain levels
+- Automatic spawning of prefabs (trees, rocks, etc.) within chosen height ranges
+- Live regeneration in the Editor as parameters change
+
+## Getting started
+
+**Requirements:** Unity 6, URP
+
+1. Clone the repository
+```
+git clone https://github.com/lavinia-lehaci/Procedural-Terrain-Generator.git
+```
+2. Open the project in Unity and load the sample scene, then press Play to see it in action.
+
+3. To use it in your own project: create an empty GameObject, attach the `TerrainGenerator` script to it, and configure it from the Inspector.  
+> Note: the script doesn't add a `MeshCollider` automatically, add one manually if you need collision.
+
+## Configuration
+<table>
+<tr>
+<td width="30%">
+<img src="Images/configuration.png" width="80%" />
+
+</td>
+<td width="70%">
+
+- ``Material``- Material applied to the generated mesh 
+- ``xSize``, ``zSize`` - Mesh resolution (vertices − 1) on the X/Z axes
+- ``Type`` 
+    - ``Elevation`` - Generates hills/valleys, with an ``Elevation Exponent`` controlling the steepness
+    - ``Terrace`` - Creates step-like terrain, with a ``Terrace Count`` as the number of steps or levels
+- ``Offset`` - Displacement or shift applied to the Perlin Noise values
+- ``Frequency`` - Factor that controls the scale of terrain features (higher = more detail, lower = smoother)
+- ``Octaves`` - Number of combined noise layers for added complexity
+- ``Height Range`` - Min/max height the generated terrain is mapped to
+- ``Levels`` - Height bands, each with a minimum height and a color
+- ``World Elements`` - Prefabs to scatter across the terrain, with a height range, spawn frequency, and optional alignment to the surface normal
+
+</td>
+
+</tr>
+</table>
+
+The mesh regenerates automatically when Inspector parameters change, or on demand via `UpdateTerrain()`.
+
+## Known limitations
+
+- World element spawning instantiates and destroys GameObjects directly rather than using an object pool, which makes it noticeably heavier on performance when regenerating terrain with many elements. Object pooling would be the natural next improvement.
+- There's currently no way to export generated terrain data for reuse. An export button (saving vertex/height data, or the full mesh, to a file) would let a specific generated terrain be reloaded later.
+
+##  How it works
+
+The core logic lives entirely in the ``TerrainGenerator`` script.
+
+On initialization, the script creates and configures `Mesh`, `MeshFilter`, and `MeshRenderer` components. The mesh's index format is set to `UInt32` (instead of the default `UInt16`) to support larger vertex counts than the default format allows.
+
+Vertices and triangles are built following the [procedural grid approach from Catlike Coding](https://catlikecoding.com/unity/tutorials/procedural-grid/). Each vertex's height comes from Unity's `Mathf.PerlinNoise()`, sampled from the vertex's X and Z positions. An offset shifts the noise pattern across the terrain, and the result is scaled by the frequency parameter to control terrain detail and elevation. Octaves are additional layers of noise that increase in frequency with each level. With each successive octave, the terrain becomes more complex and varied.
 
 Following the approach outlined in [Making maps with noise functions](https://www.redblobgames.com/maps/terrain-from-noise/), the script allows for two terrain types: elevation and terrace. The elevation type allows for valleys and hills, while the terrace type creates step-like terrain.
+ 
+Terrain levels and world elements are defined as custom structs. Levels pair a minimum height with a color, letting different elevation bands be visually distinguished. World elements are prefabs spawned within a given height range at a configurable frequency, optionally aligned to the mesh's surface normal for a more natural look.
 
-<p align="center">Elevation type</p>
-<figure>
-  <img
-  src="Images/elevation.png"
-  alt="Elevation">
-</figure>
-
-<p align="center">Terrace type</p>
-<figure>
-  <img
-  src="Images/terrace.png"
-  alt="Terrace">
-</figure>
-
-A height range is introduced to define the vertical limits that constrain the terrain. The values generated by the combination of Perlin Noise and discussed parameters are mapped to this range.
-
-Custom structs are also created to support different terrain levels and world elements. Terrain levels define a minimum height value and a color, allowing for the creation of height bands that can be assigned unique colors. This is useful for visually distinguishing different regions of the terrain. World elements are prefabs that are spawned within specified height ranges, with customizable frequency such that it adds variety and complexity to the environment. 
+The included [Starter Assets](https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526) package allows walking across the generated terrain in the sample scene.
 
 <figure>
   <img
@@ -35,55 +80,13 @@ Custom structs are also created to support different terrain levels and world el
   alt="WorldElements">
 </figure>
 
-The project also includes the [Starter Assets](https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526) which can be used to allow player movement across the terrain. Since the script does not create a ``MeshCollider`` for the mesh, the component will have to be added manually in the inspector.
-
-The mesh is updated whenever there are changes to the parameters displayed in the Unity inspector. The mesh can be also regenerated through other scripts by calling the ``UpdateTerrain()`` function.
-
-## Configuration options
-<p align="center">
-  <img
-  src="Images/configuration.png"
-  width="50%"
-  alt="configuration">
-</p>
-
-- ``Material``- The material attached to the mesh.
-- ``xSize``, ``zSize`` - The number of vertices - 1 on the X and Z axes of the mesh.
-- ``Type`` - The function that determines the terrain shape based on height values.
-    - ``Elevation`` - Generates hills and valleys.
-        - ``Elevation Exponent`` - The factor that influences the steepness and variation of the terrain. A higher exponent results in a terrain with sharper peaks and deeper valleys, while a lower exponent leads to a more even and smoother terrain.
-    - ``Terrace`` - Creates step-like terrain.
-        - ``Terrace Count`` - The number of steps or levels for the terrace type.
-- ``Offset`` - The displacement or shift applied to the Perlin Noise values.
-- ``Frequency`` - The factor that controls the scale of terrain features vertically. Higher frequency values lead to more detailed and smaller features, while lower frequency values produce larger, smoother features.
-- ``Octaves`` - The number of combined noise layers that introduce complexity and detail to the terrain.
-- ``Height Range`` - The minimum and maximum height for terrain features.
-- ``Levels`` - The list of terrain levels that allows for different height bands to be assigned specific colors.
-- ``World Elements`` - The list of prefabs to be spawned between certain height ranges with a given frequency and the possibility to be aligned to the mesh's normal vector.
-
-## Remarks
-- Spawning world elements is quite heavy on the performance due to the numerous game objects that are instantiated and destroyed at runtime.
-
-## Getting Started
-1. Cloning the repository
-```
-git clone https://github.com/lavinia-lehaci/Procedural-Terrain-Generator.git
-```
-2. Running the example project
-- Open the Unity project and the sample scene.
-- Click **Play** to run the scene.
-
-3. Integrating the script into your own project
-- Create an empty GameObject in your scene and attach the ``TerrainGenerator`` script to it.
-- Use the Unity Inspector to customize the terrain parameters and adjust the look of your terrain.
-
 ## References
 - Tutorials
-    - https://catlikecoding.com/unity/tutorials/procedural-grid/
-    - https://www.redblobgames.com/maps/terrain-from-noise/
+  - [Procedural Grid – Catlike Coding](https://catlikecoding.com/unity/tutorials/procedural-grid/)
+  - [Making maps with noise functions – Red Blob Games](https://www.redblobgames.com/maps/terrain-from-noise/)
 - Assets
-    - https://kenney.nl/assets/nature-kit
-    - https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526
+  - [Nature Kit – Kenney](https://kenney.nl/assets/nature-kit)
+  - [Starter Assets – ThirdPerson](https://assetstore.unity.com/packages/essentials/starter-assets-thirdperson-updates-in-new-charactercontroller-pa-196526)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

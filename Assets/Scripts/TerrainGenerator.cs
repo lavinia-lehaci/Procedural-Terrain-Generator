@@ -43,7 +43,6 @@ public class TerrainGenerator : MonoBehaviour
 
     private int _currentXSize;
     private int _currentZSize;
-    private bool _shouldRegenerateTerrain;
     private Mesh _mesh;
     private Vector3[] _vertices;
     private int[] _triangles;
@@ -94,16 +93,7 @@ public class TerrainGenerator : MonoBehaviour
             ZSize = _currentZSize;
         }
 
-        _shouldRegenerateTerrain = true;
-    }
-
-    void Update()
-    {
-        if(_shouldRegenerateTerrain)
-        {
-            UpdateTerrain();
-            _shouldRegenerateTerrain = false;
-        }
+        UpdateTerrain();
     }
 
     public void UpdateTerrain()
