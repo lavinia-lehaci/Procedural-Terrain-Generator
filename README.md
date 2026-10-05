@@ -30,11 +30,11 @@ git clone https://github.com/lavinia-lehaci/Procedural-Terrain-Generator.git
 ## Configuration
 <table>
 <tr>
-<td width="40%">
+<td width="50%">
 <img src="Images/configuration.png"/>
 
 </td>
-<td width="60%">
+<td width="50%">
 
 - ``Material``- Material applied to the generated mesh 
 - ``xSize``, ``zSize`` - Mesh resolution (vertices − 1) on the X/Z axes
